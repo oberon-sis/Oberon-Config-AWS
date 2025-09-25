@@ -1,8 +1,11 @@
 #!/bin/bash
 
+
 SEPARATOR="══════════════════════════════════════════════════════════════════════════════════"
 # TARGET_DIR agora é global e centraliza o nome da pasta
 TARGET_DIR="oberon" 
+
+PROJECT_ROOT=$(pwd) 
 
 print_separator() {
     echo "║$SEPARATOR║"
@@ -38,25 +41,23 @@ function create_users_and_permissions() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Criando e configurando usuários...'
-        # Volta para a raiz do projeto (Oberon-Config-AWS)
-        cd .. 
-        source user-config/user_group.sh # Assumindo o nome do arquivo user_group.sh
-        # Retorna para a pasta de clonagem
-        cd "$TARGET_DIR"
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/user_config/user_group.sh" #
         echo '-> Configuração de usuários concluída.'
     else
         echo '-> Criação de usuários foi ignorada.'
     fi
+    # NOTA: Não é necessário 'cd ..' e 'cd $TARGET_DIR' aqui, pois não alteramos o diretório de trabalho.
 }
 
-# Funções de CLONAGEM... (mantidas como estão)
 function clone_repository() {
     print_header "CLONAGEM DE REPOSITÓRIOS - WEB"
     read -p 'Clonar o repositório da Oberon-Aplicação-Web? (S/N): ' RESPOSTA
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Clonando repositório de site...'
-        source ../web-site/clon_repo.sh
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/web-site/clon_repo.sh"
         echo '-> Clonagem concluída.'
     else
         echo '-> Clonagem de site foi ignorada.'
@@ -69,7 +70,8 @@ function clone_repository_banco() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Clonando repositório de banco de dados...'
-        source ../database/clon_repo.sh
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/database/clon_repo.sh"
         echo '-> Clonagem concluída.'
     else
         echo '-> Clonagem de banco de dados foi ignorada.'
@@ -82,7 +84,8 @@ function configure_env_files() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Configurando variáveis de ambiente...'
-        source ../web-site/config_env.sh 
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/web-site/config_env.sh"
         echo '-> Configuração de .env concluída.'
     else
         echo '-> Configuração de .env foi ignorada.'
@@ -95,22 +98,22 @@ function install_docker_prerequisites() {
     read -p 'Verificar e instalar o Docker ? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Verificando status do Docker...'
-        source ../docker_config/docker_config.sh
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/docker_config/docker_config.sh"
         echo '-> Verificação de Docker concluída.'
     else
         echo '-> Verificação de Docker foi ignorada.'
     fi
 }
 
-# NOVAS FUNÇÕES: Simplesmente chamam os scripts de RUN/BUILD
 function run_container_banco() {
     print_header "INICIANDO CONTAINER DE BANCO DE DADOS"
     read -p 'Criar e iniciar o container do Banco de Dados? (S/N): ' RESPOSTA
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do DB...'
-        # AQUI O SCRIPT DE BUILD RODA NA RAIZ DO PROJETO!
-        source docker_config/config_docker_banco_de_dados.sh
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/docker_config/config_docker_banco_de_dados.sh"
         echo '-> Container do DB iniciado.'
     else
         echo '-> Container do DB ignorado.'
@@ -123,8 +126,8 @@ function run_container_site() {
     read -p 'Criar e iniciar o container da Aplicação Web? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do Site...'
-        # AQUI O SCRIPT DE BUILD RODA NA RAIZ DO PROJETO!
-        source docker_config/config_docker_site.sh
+        # CORRIGIDO: Usa o caminho absoluto
+        source "$PROJECT_ROOT/docker_config/config_docker_site.sh"
         echo '-> Container do Site iniciado.'
     else
         echo '-> Container do Site ignorado.'
@@ -149,15 +152,16 @@ echo "║             CONFIGURAÇÃO DO AMBIENTE VIRTUAL DA OBERON              
 print_separator
 
 cd ~ 
-create_target_directory 
+create_target_directory # Cria e navega para ~/oberon
 
 # 2. FLUXO DE SETUP
 clone_repository
 clone_repository_banco
 configure_env_files
 
-cd ~
 install_docker_prerequisites 
+
+cd "$PROJECT_ROOT" 
 
 run_container_banco
 run_container_site
