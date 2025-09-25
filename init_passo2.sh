@@ -39,33 +39,17 @@ else
 fi
 echo ''
 
-echo ''
-echo "Criando configurações do env"
-echo "Configure arquivo de configuração '.env' abaixo"
+
+read -p 'Configurar o env? (S/N)' RESPOSTA
+if [ "$RESPOSTA" = "S" ] || [ "$RESPOSTA" = "s" ]; then
+    echo 'Baixando o node...'
+    source web-site/node_download.sh
+else
+    echo 'Clone de site foi interrompida'
+fi
 echo ''
 
-echo ''
-echo "Credenciais de acesso ao MySql Server"
-read -p "Insira o ip do host: " HOST
-read -p "Insira o user para inserção no banco: " USER
-read -p "Insira a senha do user $USER: " SENHA
-echo ''
-read -p "Insira o database: " DATABASE
-read -p "Insira a porta: " PORTA
-read -p "Insira o ip da aplicação: " IP
-echo ''
+cd 
+cd Oberon-Config-AWS/Docker/site
+sudo docker build -t minha-image-banco . 
 
-cat > '.env' <<EOF
-HOST_DB = '$HOST'
-USER_DB = '$USER'
-PASSWORD_DB = '$SENHA'
-DATABASE_DB = '$DATABASE'
-APP_PORT= '$PORTA'
-APP_HOST= '$IP'
-EOF
-
-echo ''
-echo 'As credenciais configuradas são:'
-echo '--------------------------------'
-cat '.env'
-echo '--------------------------------'
