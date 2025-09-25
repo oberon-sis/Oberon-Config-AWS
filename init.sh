@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SEPARATOR="══════════════════════════════════════════════════════════════════════════════════"
+# TARGET_DIR agora é global e centraliza o nome da pasta
 TARGET_DIR="oberon" 
 
 print_separator() {
@@ -22,6 +23,7 @@ create_target_directory() {
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         mkdir -p "$TARGET_DIR"
         echo "-> Diretório '$TARGET_DIR' criado ou já existente."
+        # Navega para o diretório onde o código será clonado
         cd "$TARGET_DIR" 
         echo "-> Diretório atual: $(pwd)"
     else
@@ -36,8 +38,10 @@ function create_users_and_permissions() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Criando e configurando usuários...'
+        # Volta para a raiz do projeto (Oberon-Config-AWS)
         cd .. 
-        source user-config/user.sh
+        source user-config/user_group.sh # Assumindo o nome do arquivo user_group.sh
+        # Retorna para a pasta de clonagem
         cd "$TARGET_DIR"
         echo '-> Configuração de usuários concluída.'
     else
@@ -45,6 +49,7 @@ function create_users_and_permissions() {
     fi
 }
 
+# Funções de CLONAGEM... (mantidas como estão)
 function clone_repository() {
     print_header "CLONAGEM DE REPOSITÓRIOS - WEB"
     read -p 'Clonar o repositório da Oberon-Aplicação-Web? (S/N): ' RESPOSTA
@@ -68,7 +73,7 @@ function clone_repository_banco() {
         echo '-> Clonagem concluída.'
     else
         echo '-> Clonagem de banco de dados foi ignorada.'
-    fi
+    	fi
 }
 
 function configure_env_files() {
@@ -97,35 +102,68 @@ function install_docker_prerequisites() {
     fi
 }
 
+# NOVAS FUNÇÕES: Simplesmente chamam os scripts de RUN/BUILD
+function run_container_banco() {
+    print_header "INICIANDO CONTAINER DE BANCO DE DADOS"
+    read -p 'Criar e iniciar o container do Banco de Dados? (S/N): ' RESPOSTA
+    
+    if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
+        echo '-> Construindo e iniciando container do DB...'
+        # AQUI O SCRIPT DE BUILD RODA NA RAIZ DO PROJETO!
+        source docker_config/config_docker_banco_de_dados.sh
+        echo '-> Container do DB iniciado.'
+    else
+        echo '-> Container do DB ignorado.'
+    fi
+}
+
+function run_container_site() {
+    print_header "INICIANDO CONTAINER DA APLICAÇÃO WEB"
+    
+    read -p 'Criar e iniciar o container da Aplicação Web? (S/N): ' RESPOSTA
+    if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
+        echo '-> Construindo e iniciando container do Site...'
+        # AQUI O SCRIPT DE BUILD RODA NA RAIZ DO PROJETO!
+        source docker_config/config_docker_site.sh
+        echo '-> Container do Site iniciado.'
+    else
+        echo '-> Container do Site ignorado.'
+    fi
+}
+
 print_separator
 echo "║             SCRIPT DE CONFIGURAÇÃO INICIAL DA OBERON                     ║"
 print_separator
 echo """
-      ███████    ███████████  ██████████ ███████████      ███████    ██████   █████
-    ███▒▒▒▒▒███ ▒▒███▒▒▒▒▒███▒▒███▒▒▒▒▒█▒▒███▒▒▒▒▒███   ███▒▒▒▒▒███ ▒▒██████ ▒▒███ 
+      ███████     ███████████  ██████████ ███████████        ███████     ██████   █████
+    ███▒▒▒▒▒███ ▒▒███▒▒▒▒▒███▒▒███▒▒▒▒▒█▒▒███▒▒▒▒▒███    ███▒▒▒▒▒███ ▒▒██████ ▒▒███ 
   ███     ▒▒███ ▒███    ▒███ ▒███  █ ▒  ▒███    ▒███  ███     ▒▒███ ▒███▒███ ▒███ 
   ▒███      ▒███ ▒██████████  ▒██████    ▒██████████  ▒███      ▒███ ▒███▒▒███▒███ 
   ▒███      ▒███ ▒███▒▒▒▒▒███ ▒███▒▒█    ▒███▒▒▒▒▒███ ▒███      ▒███ ▒███ ▒▒██████ 
-  ▒▒███     ███  ▒███    ▒███ ▒███ ▒   █ ▒███    ▒███ ▒▒███     ███  ▒███  ▒▒█████ 
-  ▒▒▒███████▒   ███████████  ██████████ █████   █████ ▒▒▒███████▒   █████  ▒▒█████
-    ▒▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒ ▒▒▒▒▒   ▒▒▒▒▒    ▒▒▒▒▒▒▒    ▒▒▒▒▒    ▒▒▒▒▒    
+  ▒▒███     ███  ▒███    ▒███ ▒███ ▒  █ ▒███    ▒███ ▒▒███     ███  ▒███  ▒▒█████ 
+  ▒▒▒███████▒  ███████████  ██████████ █████  █████ ▒▒▒███████▒  █████  ▒▒█████
+    ▒▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒    ▒▒▒▒▒▒▒    ▒▒▒▒▒    ▒▒▒▒▒    
 """
 print_separator
 echo "║             CONFIGURAÇÃO DO AMBIENTE VIRTUAL DA OBERON                     ║"
 print_separator
 
 cd ~ 
+create_target_directory 
 
-create_target_directory
-# create_users_and_permissions
+# 2. FLUXO DE SETUP
 clone_repository
 clone_repository_banco
 configure_env_files
-install_docker_prerequisites
+
+cd ~
+install_docker_prerequisites 
+
+run_container_banco
+run_container_site
 
 print_header "FINALIZAÇÃO DO SETUP"
 echo "O script de configuração foi concluído. Verifique o output para erros."
 echo "Os repositórios foram clonados em (~/$TARGET_DIR)."
-echo "Próximo passo: Use 'docker compose up' para iniciar os serviços!"
+echo "Próximo passo: Use os comandos de start (run_db.sh e run_web.sh) para iniciar os serviços!"
 print_separator
-
