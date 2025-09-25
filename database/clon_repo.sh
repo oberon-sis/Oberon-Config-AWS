@@ -1,46 +1,42 @@
 #!/bin/bash
 
-# --- Variáveis de configuração ---
-# Substitua com a URL do seu repositório
-REPO_URL="https://github.com/upfinity-sisa/monitoramento_atm_bd.git"
+SEPARATOR="══════════════════════════════════════════════════════════════════════════════════"
 
-# Substitua com o nome do seu repositório
-REPO_NAME="monitoramento_atm_bd"
+REPO_URL="https://github.com/oberon-sis/Oberon-Banco-De-Dados.git"
+REPO_NAME="Oberon-Banco-De-Dados"
 
-# Substitua com o nome do script que configura o banco de dados dentro do seu repositório
-DB_SCRIPT_NAME="init.sh"
+print_separator() {
+    echo "║$SEPARATOR║"
+}
 
-# --- Script principal ---
-# Cria a pasta 'upfinity' se ela não existir
-echo "Criando a pasta 'upfinity'..."
-cd ..
-mkdir -p upfinity
+print_header() {
+    echo ""
+    echo "$SEPARATOR"
+    echo "║  $1"
+    echo "$SEPARATOR"
+    echo ""
+}
 
-# Entra na pasta 'upfinity'
-cd upfinity
+clon_repo_bd() {
+    print_header "CLONAGEM DE REPOSITÓRIO: $REPO_NAME"
 
-# Clona o repositório
-echo "Clonando o repositório '$REPO_NAME'..."
-git clone $REPO_URL
+    echo "-> Diretório atual para clonagem: $(pwd)"
 
-# Entra no diretório do repositório clonado
-cd $REPO_NAME
-
-# Pergunta ao usuário se ele deseja criar o ambiente do banco
-echo ""
-read -p "Deseja criar o ambiente do banco de dados agora? (S/N): " confirm_db_setup
-
-if [[ "$confirm_db_setup" =~ ^[Ss]$ ]]; then
-    # Verifica se o script de configuração do banco de dados existe e o executa
-    if [ -f "$DB_SCRIPT_NAME" ]; then
-        echo "Executando o script de configuração do banco de dados '$DB_SCRIPT_NAME'..."
-        chmod +x "$DB_SCRIPT_NAME"  # Garante que o script seja executável
-        ./$DB_SCRIPT_NAME
+    if [ -d "$REPO_NAME" ]; then
+        echo "-> Repositório '$REPO_NAME' já existe. Nenhuma ação de clonagem necessária."
     else
-        echo "Erro: O script '$DB_SCRIPT_NAME' não foi encontrado."
+        echo "-> Clonando repositório '$REPO_NAME' de $REPO_URL..."
+        git clone "$REPO_URL"
+        
+        if [ $? -ne 0 ]; then
+            echo "ERRO: Falha ao clonar o repositório. Abortando provisionamento."
+            return 1
+        fi
     fi
-else
-    echo "Operação cancelada. O ambiente do banco de dados não foi criado."
-fi
 
-echo "Processo finalizado."
+    echo ""
+    echo "CLONAGEM CONCLUÍDA. Diretório de trabalho permanece: $(pwd)"
+}
+
+# Execução do Script
+clon_repo_bd
