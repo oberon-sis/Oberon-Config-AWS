@@ -26,7 +26,11 @@ run_db() {
 
     echo "-> 2/3: Construindo imagem '$DB_IMAGE_NAME' a partir do Dockerfile..."
     # AÇÃO CORRIGIDA: Usa -f para apontar para o Dockerfile e o '.' como contexto
-    sudo docker build -t $DB_IMAGE_NAME -f $DOCKERFILE_PATH .
+    cd ~
+    sudo docker build \
+        -t $DB_IMAGE_NAME \
+        -f Oberon-Config-AWS/Docker/banco_de_dados/Dockerfile \
+        ./oberon 
 
     if [ $? -ne 0 ]; then
         echo "ERRO: Falha na construção da imagem '$DB_IMAGE_NAME'. Abortando."

@@ -29,7 +29,11 @@ run_web() {
     echo "-> Usando Dockerfile em: $DOCKERFILE_PATH"
     
     # Execução do build: -f aponta para o Dockerfile, e o '.' é o contexto (raiz)
-    sudo docker build -t $APP_IMAGE_NAME -f $DOCKERFILE_PATH $BUILD_CONTEXT
+    cd ~
+    sudo docker build \
+        -t $DB_IMAGE_NAME \
+        -f Oberon-Config-AWS/Docker/site/Dockerfile \
+        ./oberon 
 
     if [ $? -ne 0 ]; then
         echo "ERRO: Falha na construção da imagem da Web. Abortando."
