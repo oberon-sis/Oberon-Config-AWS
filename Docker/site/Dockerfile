@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
 
-COPY ./oberon/Oberon-Aplicacao-Web.
+COPY ./oberon/Oberon-Aplicacao-Web .
 
 EXPOSE 80
 
