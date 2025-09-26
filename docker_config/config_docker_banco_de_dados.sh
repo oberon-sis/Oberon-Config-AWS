@@ -8,6 +8,7 @@ ROOT_PASSWORD="urubu100"
 
 # O caminho para o Dockerfile do banco de dados, a partir da raiz do projeto
 DOCKERFILE_PATH="Oberon-Config-AWS/Docker/banco_de_dados/Dockerfile" 
+# NOTA: O PROJECT_ROOT deve ser definido no init.sh e herdado aqui.
 
 print_header() {
     echo ""
@@ -25,13 +26,16 @@ run_db() {
     sudo docker rm $DB_CONTAINER_NAME 2> /dev/null
 
     echo "-> 2/3: Construindo imagem '$DB_IMAGE_NAME' a partir do Dockerfile..."
-    # AÇÃO CORRIGIDA: Usa -f para apontar para o Dockerfile e o '.' como contexto
+    
+    # AÇÃO CRÍTICA: Muda o diretório de trabalho para a HOME (Contexto)
     cd ~
+    
+    # Execução do build com Contexto = Home (.), resolvendo o problema do COPY
     sudo docker build -t $DB_IMAGE_NAME -f $DOCKERFILE_PATH .
 
     if [ $? -ne 0 ]; then
         echo "ERRO: Falha na construção da imagem '$DB_IMAGE_NAME'. Abortando."
-        # Volta para a raiz do projeto antes de falhar
+        # RESTAURAÇÃO DE FLUXO ANTES DE FALHAR
         cd "$PROJECT_ROOT" 
         return 1
     fi
@@ -47,6 +51,9 @@ run_db() {
         echo "ERRO: Falha ao iniciar o container do DB. Verifique os logs."
         return 1
     fi
+    
+    # RESTAURAÇÃO DE FLUXO: VOLTA PARA A RAIZ DO PROJETO ANTES DE TERMINAR
+    cd "$PROJECT_ROOT" 
 
     print_header "BANCO DE DADOS INICIADO"
     echo "Container: $DB_CONTAINER_NAME rodando na rede padrão (bridge)."
