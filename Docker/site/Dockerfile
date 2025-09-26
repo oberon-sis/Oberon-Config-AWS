@@ -12,8 +12,7 @@ WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
 
-# CORREÇÃO 2: Incluir a pasta raiz do projeto no caminho
-COPY ./Oberon-Config-AWS/web-site .
+COPY ./oberon/Oberon-Aplicacao-Web.
 
 EXPOSE 80
 

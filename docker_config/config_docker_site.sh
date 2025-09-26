@@ -32,6 +32,7 @@ run_web() {
     
     # Execução do build: -f aponta para o Dockerfile, e o '.' é o contexto (raiz)
     cd ~
+    echo "docker build  $DB_IMAGE_NAME ---- $DOCKERFILE_PATH ."
     sudo docker build -t $DB_IMAGE_NAME -f $DOCKERFILE_PATH .
 
     if [ $? -ne 0 ]; then
