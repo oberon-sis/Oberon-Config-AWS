@@ -1,7 +1,9 @@
 FROM node:lts-bookworm AS dependencies
 WORKDIR /app
 
-COPY ./web-site/package*.json ./
+# CORREÇÃO 1: Incluir a pasta raiz do projeto no caminho
+# (Para que funcione com o contexto da Home)
+COPY ./Oberon-Config-AWS/web-site/package*.json ./
 
 RUN npm install
 
@@ -10,7 +12,8 @@ WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
 
-COPY ./web-site .
+# CORREÇÃO 2: Incluir a pasta raiz do projeto no caminho
+COPY ./Oberon-Config-AWS/web-site .
 
 EXPOSE 80
 
