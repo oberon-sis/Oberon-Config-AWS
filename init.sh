@@ -91,7 +91,7 @@ function install_docker_prerequisites() {
     read -p 'Verificar e instalar o Docker ? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Verificando status do Docker...'
-        source "Oberon-Config-AWS/docker_config/docker_config.sh"
+            source "$PROJECT_ROOT/docker_config/docker_config.sh"
         echo '-> Verificação de Docker concluída.'
     else
         echo '-> Verificação de Docker foi ignorada.'
