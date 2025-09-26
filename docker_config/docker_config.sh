@@ -21,15 +21,22 @@ install_docker() {
     sudo apt update
     sudo apt upgrade -y
     sudo apt install -y ca-certificates curl gnupg lsb-release
+
+    echo "-> Adicionando chave GPG oficial do Docker e repositório..."
     sudo mkdir -p /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
+    
     echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+    echo "-> Instalando Docker CE, Containerd e Compose Plugin..."
     sudo apt update
     sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    echo "-> Iniciando o serviço Docker..."
+    sudo systemctl start docker
+    sudo systemctl enable docker 
 
     print_header "FINALIZAÇÃO DA INSTALAÇÃO"
 
