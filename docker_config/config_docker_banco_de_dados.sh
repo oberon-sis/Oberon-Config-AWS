@@ -7,7 +7,7 @@ DB_CONTAINER_NAME="oberon-banco-c"
 ROOT_PASSWORD="urubu100"
 
 # O caminho para o Dockerfile do banco de dados, a partir da raiz do projeto
-DOCKERFILE_PATH="Docker/banco_de_dados/Dockerfile"
+DOCKERFILE_PATH="Oberon-Config-AWS/Docker/banco_de_dados/Dockerfile" 
 
 print_header() {
     echo ""
@@ -27,13 +27,12 @@ run_db() {
     echo "-> 2/3: Construindo imagem '$DB_IMAGE_NAME' a partir do Dockerfile..."
     # AÇÃO CORRIGIDA: Usa -f para apontar para o Dockerfile e o '.' como contexto
     cd ~
-    sudo docker build \
-        -t $DB_IMAGE_NAME \
-        -f Oberon-Config-AWS/Docker/banco_de_dados/Dockerfile \
-        ./oberon 
+    sudo docker build -t $DB_IMAGE_NAME -f $DOCKERFILE_PATH .
 
     if [ $? -ne 0 ]; then
         echo "ERRO: Falha na construção da imagem '$DB_IMAGE_NAME'. Abortando."
+        # Volta para a raiz do projeto antes de falhar
+        cd "$PROJECT_ROOT" 
         return 1
     fi
 
