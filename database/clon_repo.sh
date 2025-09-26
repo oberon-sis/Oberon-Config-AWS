@@ -2,7 +2,10 @@
 
 SEPARATOR="══════════════════════════════════════════════════════════════════════════════════"
 
+# Variáveis do Diretório e Repositório
+TARGET_DIR="oberon"
 REPO_URL="https://github.com/oberon-sis/Oberon-Banco-De-Dados.git"
+
 REPO_NAME="Oberon-Banco-De-Dados"
 
 print_separator() {
@@ -17,10 +20,23 @@ print_header() {
     echo ""
 }
 
-clon_repo_bd() {
-    print_header "CLONAGEM DE REPOSITÓRIO: $REPO_NAME"
+check_and_clone_repo() {
+    print_header "VERIFICAÇÃO DE AMBIENTE E CLONAGEM"
 
-    echo "-> Diretório atual para clonagem: $(pwd)"
+    echo "-> Iniciando verificação a partir de: $(pwd)"
+
+    if [ -d "$TARGET_DIR" ]; then
+        echo "-> Diretório '$TARGET_DIR' encontrado. Navegando..."
+        cd "$TARGET_DIR"
+        echo "-> Diretório atual: $(pwd)"
+    else
+        echo "ERRO: O diretório '$TARGET_DIR' não foi encontrado em sua Home (~)."
+        echo "Por favor, execute o setup inicial (init.sh) para criar a pasta."
+        exit 1 
+    fi
+
+    # 2. Lógica de Clonagem (dentro de ~/oberon)
+    print_header "CLONAGEM DO REPOSITÓRIO: $REPO_NAME"
 
     if [ -d "$REPO_NAME" ]; then
         echo "-> Repositório '$REPO_NAME' já existe. Nenhuma ação de clonagem necessária."
@@ -29,14 +45,17 @@ clon_repo_bd() {
         git clone "$REPO_URL"
         
         if [ $? -ne 0 ]; then
-            echo "ERRO: Falha ao clonar o repositório. Abortando provisionamento."
-            return 1
+            echo "ERRO: Falha ao clonar o repositório. Abortando provisão."
+            cd .. # Volta para a Home antes de falhar
+            exit 1
         fi
     fi
 
+    # 3. Retorno para o diretório Home (Mantém o fluxo limpo)
+    cd ~
     echo ""
-    echo "CLONAGEM CONCLUÍDA. Diretório de trabalho permanece: $(pwd)"
+    echo "CLONAGEM CONCLUÍDA. Retornando ao diretório: $(pwd)"
 }
 
 # Execução do Script
-clon_repo_bd
+check_and_clone_repo
