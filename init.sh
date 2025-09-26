@@ -26,8 +26,6 @@ create_target_directory() {
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         mkdir -p "$TARGET_DIR"
         echo "-> Diretório '$TARGET_DIR' criado ou já existente."
-        # Navega para o diretório onde o código será clonado
-        cd "$TARGET_DIR" 
         echo "-> Diretório atual: $(pwd)"
     else
         echo "-> Criação de diretório cancelada. Abortando Setup."
@@ -41,8 +39,7 @@ function create_users_and_permissions() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Criando e configurando usuários...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/user_config/user_group.sh" #
+        source "Oberon-Config-AWS/user_config/user_group.sh" #
         echo '-> Configuração de usuários concluída.'
     else
         echo '-> Criação de usuários foi ignorada.'
@@ -56,8 +53,7 @@ function clone_repository() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Clonando repositório de site...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/web-site/clon_repo.sh"
+        source "Oberon-Config-AWS/web-site/clon_repo.sh"
         echo '-> Clonagem concluída.'
     else
         echo '-> Clonagem de site foi ignorada.'
@@ -70,8 +66,7 @@ function clone_repository_banco() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Clonando repositório de banco de dados...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/database/clon_repo.sh"
+        source "Oberon-Config-AWS/database/clon_repo.sh"
         echo '-> Clonagem concluída.'
     else
         echo '-> Clonagem de banco de dados foi ignorada.'
@@ -84,8 +79,7 @@ function configure_env_files() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Configurando variáveis de ambiente...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/web-site/config_env.sh"
+        source "Oberon-Config-AWS/web-site/config_env.sh"
         echo '-> Configuração de .env concluída.'
     else
         echo '-> Configuração de .env foi ignorada.'
@@ -98,8 +92,7 @@ function install_docker_prerequisites() {
     read -p 'Verificar e instalar o Docker ? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Verificando status do Docker...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/docker_config/docker_config.sh"
+        source "Oberon-Config-AWS/docker_config/docker_config.sh"
         echo '-> Verificação de Docker concluída.'
     else
         echo '-> Verificação de Docker foi ignorada.'
@@ -112,8 +105,7 @@ function run_container_banco() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do DB...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/docker_config/config_docker_banco_de_dados.sh"
+        source "Oberon-Config-AWS/docker_config/config_docker_banco_de_dados.sh"
         echo '-> Container do DB iniciado.'
     else
         echo '-> Container do DB ignorado.'
@@ -126,8 +118,7 @@ function run_container_site() {
     read -p 'Criar e iniciar o container da Aplicação Web? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do Site...'
-        # CORRIGIDO: Usa o caminho absoluto
-        source "$PROJECT_ROOT/docker_config/config_docker_site.sh"
+        source "Oberon-Config-AWS/docker_config/config_docker_site.sh"
         echo '-> Container do Site iniciado.'
     else
         echo '-> Container do Site ignorado.'
