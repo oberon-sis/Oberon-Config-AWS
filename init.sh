@@ -29,7 +29,6 @@ create_target_directory() {
         echo "-> Diretório atual: $(pwd)"
     else
         echo "-> Criação de diretório cancelada. Abortando Setup."
-        exit 1
     fi
 }
 

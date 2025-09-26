@@ -1,46 +1,59 @@
 #!/bin/bash
 
-# --- Variáveis de configuração ---
-# Substitua com a URL do seu repositório
-REPO_URL="https://github.com/upfinity-sisa/monitoramento_atm_bd.git"
+SEPARATOR="══════════════════════════════════════════════════════════════════════════════════"
 
-# Substitua com o nome do seu repositório
-REPO_NAME="monitoramento_atm_bd"
+REPO_NAME="oberon"
+REPO_URL="https://github.com/oberon-sis/Oberon-Banco-De-Dados.git"
+REPO_NAME="Oberon-Banco-De-Dados"
 
-# Substitua com o nome do script que configura o banco de dados dentro do seu repositório
-DB_SCRIPT_NAME="init.sh"
+print_separator() {
+    echo "║$SEPARATOR║"
+}
 
-# --- Script principal ---
-# Cria a pasta 'upfinity' se ela não existir
-echo "Criando a pasta 'upfinity'..."
-cd ..
-mkdir -p upfinity
+print_header() {
+    echo ""
+    echo "$SEPARATOR"
+    echo "║  $1"
+    echo "$SEPARATOR"
+    echo ""
+}
 
-# Entra na pasta 'upfinity'
-cd upfinity
+check_and_clone_repo() {
+    print_header "VERIFICAÇÃO DE AMBIENTE E CLONAGEM"
 
-# Clona o repositório
-echo "Clonando o repositório '$REPO_NAME'..."
-git clone $REPO_URL
+    echo "-> Iniciando verificação a partir de: $(pwd)"
 
-# Entra no diretório do repositório clonado
-cd $REPO_NAME
-
-# Pergunta ao usuário se ele deseja criar o ambiente do banco
-echo ""
-read -p "Deseja criar o ambiente do banco de dados agora? (S/N): " confirm_db_setup
-
-if [[ "$confirm_db_setup" =~ ^[Ss]$ ]]; then
-    # Verifica se o script de configuração do banco de dados existe e o executa
-    if [ -f "$DB_SCRIPT_NAME" ]; then
-        echo "Executando o script de configuração do banco de dados '$DB_SCRIPT_NAME'..."
-        chmod +x "$DB_SCRIPT_NAME"  # Garante que o script seja executável
-        ./$DB_SCRIPT_NAME
+    if [ -d "$TARGET_DIR" ]; then
+        echo "-> Diretório '$TARGET_DIR' encontrado. Navegando..."
+        cd "$TARGET_DIR"
+        echo "-> Diretório atual: $(pwd)"
     else
-        echo "Erro: O script '$DB_SCRIPT_NAME' não foi encontrado."
+        echo "ERRO: O diretório '$TARGET_DIR' não foi encontrado em sua Home (~)."
+        echo "Por favor, execute o setup inicial (init.sh) para criar a pasta."
+        exit 1 
     fi
-else
-    echo "Operação cancelada. O ambiente do banco de dados não foi criado."
-fi
 
-echo "Processo finalizado."
+    # 2. Lógica de Clonagem (dentro de ~/oberon)
+    print_header "CLONAGEM DO REPOSITÓRIO: $REPO_NAME"
+
+    if [ -d "$REPO_NAME" ]; then
+        echo "-> Repositório '$REPO_NAME' já existe. Nenhuma ação de clonagem necessária."
+    else
+        echo "-> Clonando repositório '$REPO_NAME' de $REPO_URL..."
+        git clone "$REPO_URL"
+        
+        if [ $? -ne 0 ]; then
+            echo "ERRO: Falha ao clonar o repositório. Abortando provisão."
+            cd .. # Volta para a Home antes de falhar
+            exit 1
+        fi
+    fi
+
+    # 3. Retorno para o diretório Home (Mantém o fluxo limpo)
+    cd ~
+    echo ""
+    echo "CLONAGEM CONCLUÍDA. Retornando ao diretório: $(pwd)"
+}
+
+# Execução do Script
+check_and_clone_repo
