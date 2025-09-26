@@ -3,7 +3,7 @@ WORKDIR /app
 
 # CORREÇÃO 1: Incluir a pasta raiz do projeto no caminho
 # (Para que funcione com o contexto da Home)
-COPY ./Oberon-Config-AWS/web-site/package*.json ./
+COPY ./oberon/Oberon-Aplicacao-Web/package*.json ./
 
 RUN npm install
 
