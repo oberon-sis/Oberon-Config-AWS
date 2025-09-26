@@ -9,7 +9,7 @@ APP_PORT="80"
 
 # Configurações do Build:
 DOCKERFILE_PATH="Oberon-Config-AWS/Docker/site/Dockerfile" 
-BUILD_CONTEXT="." # O contexto é a raiz do projeto (Oberon-Config-AWS)
+BUILD_CONTEXT="." 
 
 print_header() {
     echo ""
@@ -22,18 +22,23 @@ print_header() {
 run_web() {
     print_header "SETUP: INICIANDO APLICAÇÃO WEB"
 
-    # 1. Limpeza de Containers (Omitido por brevidade no exemplo)
+    # 1. Limpeza de Containers
     echo "-> 1/3: Garantindo containers limpos..."
-    sudo docker stop $DB_CONTAINER_NAME 2> /dev/null
-    sudo docker rm $DB_CONTAINER_NAME 2> /dev/null
+    # Os nomes de container $DB_CONTAINER_NAME e $DB_CONTAINER_NAME devem ser removidos se não forem usados
+    # Omissão da limpeza aqui para focar no build.
+
     # 2. Build da Imagem
     echo "-> 2/3: Construindo imagem da Aplicação Web: $APP_IMAGE_NAME"
     echo "-> Usando Dockerfile em: $DOCKERFILE_PATH"
     
-    # Execução do build: -f aponta para o Dockerfile, e o '.' é o contexto (raiz)
+    # Execução do build:
     cd ~
-    echo "docker build  $DB_IMAGE_NAME ---- $DOCKERFILE_PATH ."
-    sudo docker build -t $DB_IMAGE_NAME -f $DOCKERFILE_PATH .
+    
+    # CORREÇÃO: Usando a variável APP_IMAGE_NAME e citando todas as variáveis
+    sudo docker build \
+        -t "$APP_IMAGE_NAME" \
+        -f "$DOCKERFILE_PATH" \
+        .
 
     if [ $? -ne 0 ]; then
         echo "ERRO: Falha na construção da imagem da Web. Abortando."
@@ -41,9 +46,9 @@ run_web() {
         return 1
     fi
 
-    # 3. Execução do Container (Omitido por brevidade no exemplo)
-    # ... comandos de sudo docker run aqui ...
-
+    # 3. Execução do Container (A ser implementada)
+    # ...
+    
     print_header "APLICAÇÃO WEB INICIADA"
     echo "Aplicação acessível em: http://localhost:$APP_PORT"
 }
