@@ -104,6 +104,7 @@ function run_container_banco() {
     
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do DB...'
+        cd
         source "Oberon-Config-AWS/docker_config/config_docker_banco_de_dados.sh"
         echo '-> Container do DB iniciado.'
     else
@@ -117,6 +118,7 @@ function run_container_site() {
     read -p 'Criar e iniciar o container da Aplicação Web? (S/N): ' RESPOSTA
     if [[ "$RESPOSTA" =~ ^[Ss]$ ]]; then
         echo '-> Construindo e iniciando container do Site...'
+        cd
         source "Oberon-Config-AWS/docker_config/config_docker_site.sh"
         echo '-> Container do Site iniciado.'
     else
