@@ -47,7 +47,10 @@ run_web() {
     fi
 
     # 3. Execução do Container (A ser implementada)
-    # ...
+    sudo docker run -d \
+        --name $APP_CONTAINER_NAME \
+        -p 80:80 \
+        $APP_IMAGE_NAME
     
     print_header "APLICAÇÃO WEB INICIADA"
     echo "Aplicação acessível em: http://localhost:$APP_PORT"
