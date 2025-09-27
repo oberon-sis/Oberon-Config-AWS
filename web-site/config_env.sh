@@ -30,30 +30,33 @@ configure_env_files() {
     print_header "$SUBTITULO"
 
     echo "Credenciais de acesso ao Banco de Dados e Aplicação"
-    read -p "Insira o ip do host: " HOST
-    read -p "Insira o user para inserção no banco: " USER
-    read -p "Insira a senha do user $USER: " SENHA
+    read -p "Insira o ip do host [HOST_DB] : " HOST
+    read -p "Insira o database [DATABASE_DB]: " DATABASE
+    read -p "Insira o user para inserção no banco [USER_DB]: " USER
+    read -p "Insira a senha do user $USER [PASSWORD_DB]: " SENHA
+    read -p "Insira a porta da aplicação [PORT_DB]: " PORTA
     echo ""
-    read -p "Insira o database: " DATABASE
-    read -p "Insira a porta da aplicação: " PORTA
-    read -p "Insira o ip/host da aplicação: " IP
+    read -p "Insira a porta da aplicação [APP_HOST] : " PORTA_APP
+    read -p "Insira o ip/host da aplicação [APP_HOST]: " IP
     echo ""
 
     cat > '.env' <<EOF
 HOST_DB = '$HOST'
+DATABASE_DB = '$DATABASE'
 USER_DB = '$USER'
 PASSWORD_DB = '$SENHA'
-DATABASE_DB = '$DATABASE'
-APP_PORT = '$PORTA'
+PORT_DB = '$PORTA'
+APP_PORT = '$PORTA_APP'
 APP_HOST = '$IP'
 EOF
 
     cat > '.env.dev' <<EOF
 HOST_DB = '$HOST'
+DATABASE_DB = '$DATABASE'
 USER_DB = '$USER'
 PASSWORD_DB = '$SENHA'
-DATABASE_DB = '$DATABASE'
-APP_PORT = '$PORTA'
+PORT_DB = '$PORTA'
+APP_PORT = '$PORTA_APP'
 APP_HOST = '$IP'
 EOF
     
