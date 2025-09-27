@@ -77,21 +77,52 @@ Essa é a visualização da estrutura de pastas do seu repositório principal OB
 
 - Plataforma: Ubuntu (Linux)
 
-## 📌 Como usar
-1- Clone este repositório para o seu ambiente local.
+## 🚀 Como Usar o Oberon-Config-AWS
+
+Para que o script funcione corretamente, é **obrigatório** que o **AWS Command Line Interface (AWS CLI)** esteja instalado e configurado em seu ambiente local com as credenciais (Access Keys) e permissões de IAM adequadas para a criação dos recursos na AWS.
+
+### 🔒 Configuração de Acesso (Security Groups)
+Para que o Oberon consiga se comunicar e operar corretamente com os recursos da AWS (como instâncias EC2, bancos de dados, etc.), é fundamental que as seguintes portas estejam habilitadas nas regras de entrada (Inbound Rules) dos seus Security Groups (SGs).
+
+Você deve garantir que os Security Groups associados aos seus recursos permitam o tráfego de entrada (Inbound) nas portas e protocolos listados abaixo, a partir da origem que for necessária:
+
+| Tipo de Tráfego | Protocolo | Porta | Descrição (Baseado na infraestrutura) |
+| :--- | :--- | :--- | :--- |
+| **HTTP** | TCP | **80** | Acesso web padrão (para um balanceador de carga ou servidor web, por exemplo). |
+| **MySQL/Aurora** | TCP | **3306** | Conexão com o banco de dados MySQL ou Amazon Aurora. **Restrinja a origem!** |
+| **SSH** | TCP | **22** | Acesso seguro ao shell do servidor (Linux/EC2). **Restrinja a origem!** |
+
+
+
+1. Clonar o Repositório
+
+Abra seu terminal e clone o projeto para o seu ambiente local:
 
     git clone https://github.com/oberon-sis/Oberon-Config-AWS.git
-    
 
-2- Navegue até o diretório principal: 
-
+2. Navegar até o Diretório
+Acesse o diretório principal do projeto clonado:
+````bash
     cd Oberon-Config-AWS
+`````
 
-3- Execute o script principal: 
 
-    ./init.sh.
+3. Executar o Script de Inicialização
+Execute o script principal (init.sh). Este script irá guiar você através do processo de configuração:
+````bash
+    ./init.sh
+`````
 
-Siga as instruções exibidas no terminal para: 
+
+****Siga as instruções exibidas no terminal para fornecer os parâmetros e credenciais necessários para a criação dos recursos AWS.****
+
+
+
+⚠️ Aviso de Segurança
+
+Restrição de Origem é Crítica: É uma prática de segurança obrigatória restringir o campo "Origem" (Source) para os serviços de infraestrutura (como SSH na porta 22 e Banco de Dados na porta 3306). Nunca use 0.0.0.0/0 (permitir acesso de qualquer lugar da internet) para estas portas em um ambiente de produção, a menos que seja estritamente necessário e gerenciado por regras de rede mais rígidas.
+
+Verifique os SGs: Verifique se os Security Groups que serão utilizados pelo Oberon já contêm essas 
 
 
 
