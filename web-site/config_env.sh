@@ -29,41 +29,30 @@ configure_env_files() {
 
     print_header "$SUBTITULO"
 
-    echo "Credenciais de acesso ao Banco de Dados e Aplicação"
-    read -p "Insira o ip do host [DB_HOST] : " HOST
-    read -p "Insira o database [DB_DATABASE]: " DATABASE
-    read -p "Insira o user para inserção no banco [DB_USER]: " USER
-    read -p "Insira a senha do user $USER [DB_PASSWORD]: " SENHA
-    read -p "Insira a porta da aplicação [DB_PORT]: " PORTA
-    echo ""
-    read -p "Insira a porta da aplicação [APP_HOST] : " PORTA_APP
-    read -p "Insira o ip/host da aplicação [APP_HOST]: " IP
-    echo ""
-
     cat > '.env' <<EOF
 AMBIENTE_PROCESSO=producao
 
-DB_HOST = '$HOST'
-DB_DATABASE = '$DATABASE'
-DB_USER = '$USER'
-DB_PASSWORD = '$SENHA'
-DB_PORT = '$PORTA'
+DB_HOST = 'localhost'
+DB_DATABASE = 'bdOberon'
+DB_USER = 'servidorOberon'
+DB_PASSWORD = 'Urubu100'
+DB_PORT = '3306'
 
-APP_PORT = '$PORTA_APP'
-APP_HOST = '$IP'
+APP_PORT = '80'
+APP_HOST = 'localhost'
 EOF
 
     cat > '.env.dev' <<EOF
-AMBIENTE_PROCESSO=desenvolvimento
+AMBIENTE_PROCESSO=producao
 
-DB_HOST = '$HOST'
-DB_DATABASE = '$DATABASE'
-DB_USER = '$USER'
-DB_PASSWORD = '$SENHA'
-DB_PORT = '$PORTA'
+DB_HOST = 'localhost'
+DB_DATABASE = 'bdOberon'
+DB_USER = 'servidorOberon'
+DB_PASSWORD = 'Urubu100'
+DB_PORT = '3306'
 
-APP_PORT = '$PORTA_APP'
-APP_HOST = '$IP'
+APP_PORT = '80'
+APP_HOST = 'localhost'
 EOF
     
     print_separator
