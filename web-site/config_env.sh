@@ -43,7 +43,7 @@ APP_HOST = 'localhost'
 EOF
 
     cat > '.env.dev' <<EOF
-AMBIENTE_PROCESSO=producao
+AMBIENTE_PROCESSO=desenvolvimento
 
 DB_HOST = 'localhost'
 DB_DATABASE = 'bdOberon'
