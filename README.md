@@ -1,81 +1,53 @@
-# Oberon - Config AWS
+## ☁️ Automação de Implantação e Configuração AWS - Oberon
 
-Este repositório contém os scripts e configurações para a infraestrutura do projeto Oberon na Amazon Web Services (AWS), focando no monitoramento de computadores de CFTV.
+Este repositório contém um conjunto de *scripts* Shell e arquivos Dockerfile criados para automatizar a implantação completa da aplicação Oberon em um ambiente IaaS (Infraestrutura como Serviço), como uma instância EC2 na AWS.
 
-## 📋 Status do Projeto
-✅ Em desenvolvimento
+O objetivo principal é garantir um *deploy* rápido, repetível e isolado através da conteinerização.
 
-## Funcionalidades
-O script principal (init.sh) automatiza todo o ciclo de vida do ambiente de desenvolvimento e produção.
+-----
 
-### ⚙️ Provisionamento do Host e Setup de Sistema
-- Instalação e Configuração: Realiza a instalação e configuração do ambiente em máquinas Ubuntu.
+### 🎯 Componentes e Objetivos
 
-- Base de Diretórios: Executa a Criação de diretorios de trabalho essenciais.
+| Componente | Objetivo | Arquivo(s) de Referência |
+| :--- | :--- | :--- |
+| **Automação** | Orquestrar a instalação de dependências, clonagem de código e *deploy* dos containers. | `init.sh` |
+| **Conteinerização** | Isolar o Banco de Dados (MySQL) e a Aplicação Web (Node.js) usando Docker. | `Docker/` |
+| **Configuração** | Criar arquivos de ambiente (`.env`) com as credenciais necessárias para a aplicação. | `web-site/config_env.sh` |
+| **Segurança Host** | Criar um usuário e grupo específicos no sistema operacional hospedeiro para segregação de permissões. | `user_config/user_group.sh` |
 
-- Provisionamento de Ferramentas: Gerencia o processo de Baixar docker e configuração (Instalação do Docker CE e plugins) no host.
+-----
 
-- Segurança e Acesso: Suporta a Configuração de credenciais e segurança para acesso aos serviços AWS e a Criação e configuração de usuários e grupos de sistema.
+### 📂 Estrutura de Diretórios Chave
 
-### 💾 Gestão de Código e Configuração
-- Clonagem de Repositórios: Suporta a Clonagem de repositórios privados, especificamente:
+| Caminho | Conteúdo Principal |
+| :--- | :--- |
+| `/` | Contém o *script* de entrada principal (`init.sh`). |
+| `Docker/` | Contém os Dockerfiles para construção das imagens dos serviços. |
+| `database/` | Scripts para clonagem do repositório de esquemas do banco de dados. |
+| `web-site/` | Scripts para clonagem do repositório da aplicação web e configuração das variáveis de ambiente. |
+| `docker_config/` | Scripts de orquestração do Docker, responsáveis por construir e executar os containers. |
+| `user_config/` | Scripts para configuração inicial de usuário e grupo no sistema operacional. |
 
-- Clonar repositorio da Oberon-Aplicacao-Web
+-----
 
-- Clonar repositorio da Oberon-Banco-De-Dados
+### 🚀 Fluxo de Execução Principal
 
-- Configuração de Ambiente: Gerencia a Configuração do arquivo .env para a aplicação web de forma interativa.
+O processo de *deploy* é iniciado pelo script mestre `init.sh`.
 
-### 🐳 Construção e Execução de Containers
-- Container do Banco de Dados: Automatiza a Criação de container com imagem da oberom para o banco de dados (Faz o build e o run do container MySQL).
+```bash
+./init.sh
+```
 
-- Container da Aplicação: Automatiza a Criação de container com imagem da oberom para a aplicação web (Faz o build e o run do container Web/Node.js).
+A partir dele, são chamados os módulos que realizam as seguintes ações:
 
-##  Estrutura do Repositório
-- `database/`: Contém os scripts de configuração do banco de dados e clonagem de repositórios.
+1.  **Configuração de Usuário:** Criação do usuário e grupo (`oberon`) no sistema operacional do host (`user_config/user_group.sh`).
+2.  **Preparação de Repositórios:** Clonagem dos repositórios de código-fonte necessários (Database e Web-Site).
+3.  **Configuração de Ambiente (.env):** Criação do arquivo de variáveis de ambiente (`.env`) para a Aplicação Web (`web-site/config_env.sh`), garantindo que ela se conecte corretamente ao banco de dados conteinerizado.
+4.  **Orquestração Docker:** Executa o script principal de Docker (`docker_config/docker_config.sh`).
+      * **Deploy do Banco de Dados:** Constrói e inicializa o container do MySQL 8.0 (`docker_config/config_docker_banco_de_dados.sh`).
+      * **Deploy do Site:** Constrói e inicializa o container da Aplicação Web, baseada em Node.js 18 (`docker_config/config_docker_site.sh`).
 
-- `init.sh`: O script principal para orquestrar a instalação e configuração do ambiente.
-
-## Estrutura de Arquivos
-
-Essa é a visualização da estrutura de pastas do seu repositório principal OBERON-CONFIG-AWS, padronizada para documentação, incluindo comentários sobre a função de cada diretório e script, conforme discutimos ao longo da nossa conversa.
-
-    ---
-    OBERON-CONFIG-AWS/
-    │
-    ├── database/ 					        # Scripts de suporte para o Banco de Dados
-    │   ├── clon_repo_sprint1 copy.sh 	
-    │   ├── clon_repo.sh 			        # Script de clonagem do repositório de Banco de Dados
-    │   └── mysql_download.sh 		        # Script para instalação do MySQL no Host (via apt)
-    │
-    ├── Docker/ 					        # Definições de imagem Docker
-    │   ├── banco_de_dados/
-    │   │   └── Dockerfile 			        # Dockerfile para a imagem do MySQL customizada
-    │   └── site/
-    │       └── Dockerfile 			        # Dockerfile para a imagem Node.js/Web
-    │
-    ├── docker_config/ 				        # Scripts de Build e Run 
-    │   ├── config_docker_banco_de_dados.sh # Script para Build e Run do Container DB
-    │   ├── config_docker_site.sh 	        # Script para Build e Run do Container Web
-    │   └── docker_config.sh 		        # Script para instalação do Docker (Provisionamento do Host)
-    │
-    ├── user_config/ 				        # Scripts de administração de usuários do sistema
-    │   └── user_group.sh 			        # Script para criação de usuários e grupos no Host
-    │
-    ├── web-site/ 					        # Scripts de Setup e Clonagem da Aplicação Web
-    │   ├── clon_repo.sh 			        # Script de clonagem do repositório Web
-    │   ├── config_env.sh 			        # Script para configuração interativa de .env 
-    │   └── node_download.sh 		        # Script de instalação de pré-requisitos Node.js/Host
-    │
-    ├── init_passo1.sh 				        # Setup: Passos antigos (Configuração da EC2 sem Containers)
-    ├── init_passo2.sh 				        # Setup: Passos antigos (Configuração da EC2 com containers)
-    ├── init.sh 					        # Script principal de orquestração e fluxo de setup (Configuração da EC2 com Dockerfile)
-    └── README.md 					        # Documentação do repositório
-
-## 🚀 Tecnologias
-- Linguagem: Shell Script
-
-- Plataforma: Ubuntu (Linux)
+-----
 
 ## 🚀 Como Usar o Oberon-Config-AWS
 
@@ -93,42 +65,16 @@ Você deve garantir que os Security Groups associados aos seus recursos permitam
 | **SSH** | TCP | **22** | Acesso seguro ao shell do servidor (Linux/EC2). **Restrinja a origem!** |
 
 
+### 🐳 Detalhes da Conteinerização (Docker)
 
-1. Clonar o Repositório
+#### **1. Dockerfile do Banco de Dados** (`Docker/banco_de_dados/Dockerfile`)
 
-Abra seu terminal e clone o projeto para o seu ambiente local:
+  * **Base:** `mysql:8.0`.
+  * **Porta Exposta:** `3306`
+  * **Função:** O Dockerfile apenas define a imagem base, confiando na execução do script do `docker_config/` para passar as variáveis de ambiente essenciais (como `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, etc.) que o MySQL utiliza para a configuração inicial do container.
 
-    git clone https://github.com/oberon-sis/Oberon-Config-AWS.git
+#### **2. Dockerfile da Aplicação Web** (`Docker/site/Dockerfile`)
 
-2. Navegar até o Diretório
-Acesse o diretório principal do projeto clonado:
-````bash
-    cd Oberon-Config-AWS
-`````
-
-
-3. Executar o Script de Inicialização
-Execute o script principal (init.sh). Este script irá guiar você através do processo de configuração:
-````bash
-    ./init.sh
-`````
-
-
-****Siga as instruções exibidas no terminal para fornecer os parâmetros e credenciais necessários para a criação dos recursos AWS.****
-
-
-
-⚠️ Aviso de Segurança
-
-Restrição de Origem é Crítica: É uma prática de segurança obrigatória restringir o campo "Origem" (Source) para os serviços de infraestrutura (como SSH na porta 22 e Banco de Dados na porta 3306). Nunca use 0.0.0.0/0 (permitir acesso de qualquer lugar da internet) para estas portas em um ambiente de produção, a menos que seja estritamente necessário e gerenciado por regras de rede mais rígidas.
-
-Verifique os SGs: Verifique se os Security Groups que serão utilizados pelo Oberon já contêm essas 
-
-
-
-## 📖 Documentação
-Mais detalhes sobre a arquitetura e as configurações na AWS estão disponíveis na documentação principal do projeto.
-
-`Nota: Este repositório é privado e contém informações sensíveis de configuração. Não compartilhe publicamente.`
-
-
+  * **Base:** `node:18`.
+  * **Porta Exposta:** `80`
+  * **Função:** Configura o ambiente Node.js, realiza a instalação das dependências (`npm install`) e define o comando para iniciar o servidor web (`npm start`).
